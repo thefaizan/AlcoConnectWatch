@@ -1,0 +1,55 @@
+name: Deploy to Dev Site
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy-dev:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore AlcoConnectWatch.sln
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Debug)
+        run: |
+          msbuild AlcoConnectWatch\AlcoConnectWatch.csproj `
+            /p:Configuration=Debug `
+            /t:Build `
+            /verbosity:minimal
+        shell: pwsh
+
+      - name: Update Web.config connection string for Dev
+        run: |
+          $webConfig = 'AlcoConnectWatch\Web.config'
+          $xml = [xml](Get-Content $webConfig)
+          $connStr = $xml.configuration.connectionStrings.add | Where-Object { $_.name -eq 'AlcoConnectWatchDb' }
+          $connStr.connectionString = '${{ secrets.DEV_DB_CONNECTION_STRING }}'
+          $xml.Save((Resolve-Path $webConfig))
+        shell: pwsh
+
+      - name: Deploy source + compiled output via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.DEV_FTP_SERVER }}
+          username: ${{ secrets.DEV_FTP_USERNAME }}
+          password: ${{ secrets.DEV_FTP_PASSWORD }}
+          local-dir: ./AlcoConnectWatch/
+          server-dir: ${{ secrets.DEV_FTP_REMOTE_DIR }}
+          exclude: |
+            **/.vs/**
+            **/obj/**
+            **/packages/**
+            **/*.user
+            **/*.suo
+            **/Properties/**
