@@ -24,5 +24,11 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+## Sensitive files
+secrets.txt
+error.txt
+error.png
+error2.txt
+
 ## Claude
 .claude/
