@@ -1,0 +1,41 @@
+name: Build & Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore AlcoConnectWatch.sln
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build & Publish
+        run: |
+          msbuild AlcoConnectWatch\AlcoConnectWatch.csproj `
+            /p:Configuration=Release `
+            /p:DeployOnBuild=true `
+            /p:WebPublishMethod=FileSystem `
+            /p:publishUrl=..\publish `
+            /p:DeleteExistingFiles=True
+        shell: pwsh
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./publish/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
