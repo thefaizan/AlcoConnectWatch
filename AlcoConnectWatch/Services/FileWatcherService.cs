@@ -111,13 +111,9 @@ namespace AlcoConnectWatch.Services
             // Resolve relative path from application base directory
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-            // For web apps, try to get the actual web root
-            try
-            {
-                if (System.Web.Hosting.HostingEnvironment.IsHosted)
-                    basePath = System.Web.Hosting.HostingEnvironment.MapPath("~") ?? basePath;
-            }
-            catch { }
+            // Remove bin folder if present (for web apps)
+            if (basePath.EndsWith("bin\\") || basePath.EndsWith("bin/"))
+                basePath = Directory.GetParent(basePath.TrimEnd('\\', '/')).FullName;
 
             return Path.Combine(basePath, path);
         }
