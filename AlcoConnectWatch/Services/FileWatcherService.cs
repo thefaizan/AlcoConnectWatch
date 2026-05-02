@@ -96,9 +96,9 @@ namespace AlcoConnectWatch.Services
             if (string.IsNullOrEmpty(path))
                 return path;
 
-            // Skip URLs
+            // Skip URLs - return empty string (not null) to prevent crash
             if (path.StartsWith("http://") || path.StartsWith("https://"))
-                return null;
+                return string.Empty;
 
             // Handle ~/path format
             if (path.StartsWith("~/"))
