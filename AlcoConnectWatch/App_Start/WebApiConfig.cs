@@ -9,13 +9,7 @@ namespace AlcoConnectWatch
     {
         public static void Register(HttpConfiguration config)
         {
-            // CORS Configuration - Restrict to specific origins in production
-            // For development, allow localhost. In production, replace with your actual domain.
-            var cors = new EnableCorsAttribute(
-                origins: "http://localhost:5050,http://localhost:56060,https://yourdomain.com",
-                headers: "*",
-                methods: "GET,POST,PUT,DELETE,OPTIONS"
-            );
+            var cors = new EnableCorsAttribute("*", "*", "*");
             config.EnableCors(cors);
 
             config.MapHttpAttributeRoutes();
