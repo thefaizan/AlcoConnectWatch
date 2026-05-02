@@ -11,7 +11,7 @@ using AlcoConnectWatch.Services;
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/users")]
-    // [RequireAuth]  // Temporarily disabled for debugging
+    [RequireAuth]
     public class UserController : ApiController
     {
         [HttpGet]
@@ -79,6 +79,19 @@ namespace AlcoConnectWatch.Controllers
         [Route("{id:int}")]
         public IHttpActionResult Update(int id, UpdateUserRequest request)
         {
+            return UpdateUserInternal(id, request);
+        }
+
+        // POST alternative for servers that block PUT requests
+        [HttpPost]
+        [Route("{id:int}/update")]
+        public IHttpActionResult UpdateViaPost(int id, UpdateUserRequest request)
+        {
+            return UpdateUserInternal(id, request);
+        }
+
+        private IHttpActionResult UpdateUserInternal(int id, UpdateUserRequest request)
+        {
             if (request == null) return BadRequest("Request body is required");
 
             using (var db = new AlcoConnectWatchContext())
@@ -108,6 +121,19 @@ namespace AlcoConnectWatch.Controllers
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult Delete(int id)
+        {
+            return DeleteUserInternal(id);
+        }
+
+        // POST alternative for servers that block DELETE requests
+        [HttpPost]
+        [Route("{id:int}/delete")]
+        public IHttpActionResult DeleteViaPost(int id)
+        {
+            return DeleteUserInternal(id);
+        }
+
+        private IHttpActionResult DeleteUserInternal(int id)
         {
             using (var db = new AlcoConnectWatchContext())
             {

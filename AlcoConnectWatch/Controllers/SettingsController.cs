@@ -40,6 +40,19 @@ namespace AlcoConnectWatch.Controllers
         [Route("")]
         public IHttpActionResult Save(SettingsDTO request)
         {
+            return SaveInternal(request);
+        }
+
+        // POST alternative for servers that block PUT requests
+        [HttpPost]
+        [Route("update")]
+        public IHttpActionResult SaveViaPost(SettingsDTO request)
+        {
+            return SaveInternal(request);
+        }
+
+        private IHttpActionResult SaveInternal(SettingsDTO request)
+        {
             if (request == null) return BadRequest("Settings are required");
 
             using (var db = new AlcoConnectWatchContext())

@@ -341,8 +341,9 @@ function app() {
 
     async saveSettings() {
       try {
-        await this.apiFetch('settings', {
-          method: 'PUT',
+        // Use POST /update endpoint to avoid 403 on servers that block PUT
+        await this.apiFetch('settings/update', {
+          method: 'POST',
           body: JSON.stringify({
             watchFolder: this.settings.watchFolder,
             scanInterval: parseInt(this.settings.scanInterval),
@@ -407,8 +408,9 @@ function app() {
       if (!this.userModal.form.email || !this.userModal.form.password) return;
       try {
         if (this.userModal.editing) {
-          await this.apiFetch('users/' + this.userModal.editId, {
-            method: 'PUT',
+          // Use POST /update endpoint to avoid 403 on servers that block PUT
+          await this.apiFetch('users/' + this.userModal.editId + '/update', {
+            method: 'POST',
             body: JSON.stringify({
               email: this.userModal.form.email,
               password: this.userModal.form.password,
@@ -435,7 +437,8 @@ function app() {
     async deleteUser(id) {
       if (!confirm('Are you sure you want to delete this user?')) return;
       try {
-        await this.apiFetch('users/' + id, { method: 'DELETE' });
+        // Use POST /delete endpoint to avoid 403 on servers that block DELETE
+        await this.apiFetch('users/' + id + '/delete', { method: 'POST', body: '{}' });
         await this.loadUsers();
       } catch (e) {
         alert('Failed to delete user: ' + e.message);
