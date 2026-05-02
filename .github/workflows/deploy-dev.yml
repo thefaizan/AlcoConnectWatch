@@ -30,12 +30,25 @@ jobs:
         shell: pwsh
 
       - name: Update Web.config connection string for Dev
+        env:
+          DB_CONN_STRING: ${{ secrets.DEV_DB_CONNECTION_STRING }}
         run: |
           $webConfig = 'AlcoConnectWatch\Web.config'
           $xml = [xml](Get-Content $webConfig)
           $connStr = $xml.configuration.connectionStrings.add | Where-Object { $_.name -eq 'AlcoConnectWatchDb' }
-          $connStr.connectionString = '${{ secrets.DEV_DB_CONNECTION_STRING }}'
+          $connStr.connectionString = $env:DB_CONN_STRING
           $xml.Save((Resolve-Path $webConfig))
+          Write-Host "Connection string updated successfully"
+        shell: pwsh
+
+      - name: Verify bin folder exists
+        run: |
+          Write-Host "=== Checking bin folder ==="
+          if (Test-Path 'AlcoConnectWatch\bin') {
+            Get-ChildItem 'AlcoConnectWatch\bin' -Recurse | Select-Object Name, Length
+          } else {
+            Write-Host "WARNING: bin folder not found!"
+          }
         shell: pwsh
 
       - name: Deploy source + compiled output via FTP
