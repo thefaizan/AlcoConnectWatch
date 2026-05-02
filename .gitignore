@@ -16,6 +16,11 @@ nuget.exe
 *.pdf
 *.zip
 
+## But allow Files folder for watch folder
+!Files/
+!Files/*.xlsx
+!Files/*.pdf
+
 ## Frontend source (separate from project copy)
 frontend/
 
