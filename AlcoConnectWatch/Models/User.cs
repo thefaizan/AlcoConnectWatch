@@ -19,6 +19,10 @@ namespace AlcoConnectWatch.Models
         [StringLength(200)]
         public string PasswordHash { get; set; }
 
+        [Required]
+        [StringLength(100)]
+        public string PasswordSalt { get; set; }
+
         [StringLength(500)]
         public string SiteAccess { get; set; }
 

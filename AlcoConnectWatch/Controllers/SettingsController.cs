@@ -4,10 +4,12 @@ using AlcoConnectWatch.Data;
 using AlcoConnectWatch.Models;
 using AlcoConnectWatch.Models.DTOs;
 using AlcoConnectWatch.Services;
+using AlcoConnectWatch.Filters;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/settings")]
+    [RequireAuth]
     public class SettingsController : ApiController
     {
         [HttpGet]

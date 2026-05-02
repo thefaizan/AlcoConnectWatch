@@ -5,10 +5,12 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using AlcoConnectWatch.Models.DTOs;
 using AlcoConnectWatch.Services;
+using AlcoConnectWatch.Filters;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/export")]
+    [RequireAuth]
     public class ExportController : ApiController
     {
         [HttpPost]

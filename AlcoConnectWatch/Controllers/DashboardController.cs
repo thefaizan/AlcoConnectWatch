@@ -4,10 +4,12 @@ using System.Linq;
 using System.Web.Http;
 using AlcoConnectWatch.Data;
 using AlcoConnectWatch.Models.DTOs;
+using AlcoConnectWatch.Filters;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/dashboard")]
+    [RequireAuth]
     public class DashboardController : ApiController
     {
         [HttpGet]

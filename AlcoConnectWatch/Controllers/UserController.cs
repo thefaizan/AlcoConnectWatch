@@ -5,10 +5,13 @@ using System.Web.Http;
 using AlcoConnectWatch.Data;
 using AlcoConnectWatch.Models;
 using AlcoConnectWatch.Models.DTOs;
+using AlcoConnectWatch.Filters;
+using AlcoConnectWatch.Services;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/users")]
+    [RequireAuth]
     public class UserController : ApiController
     {
         [HttpGet]
@@ -43,15 +46,24 @@ namespace AlcoConnectWatch.Controllers
             if (request == null || string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
                 return BadRequest("Email and password are required");
 
+            // Validate password strength
+            if (request.Password.Length < 6)
+                return BadRequest("Password must be at least 6 characters");
+
             using (var db = new AlcoConnectWatchContext())
             {
                 if (db.Users.Any(u => u.Email == request.Email))
                     return BadRequest("A user with this email already exists");
 
+                // Generate salt and hash password
+                var salt = AuthTokenService.GenerateSalt();
+                var hashedPassword = AuthTokenService.HashPassword(request.Password, salt);
+
                 var user = new User
                 {
                     Email = request.Email,
-                    PasswordHash = DbInitializer.HashPassword(request.Password),
+                    PasswordHash = hashedPassword,
+                    PasswordSalt = salt,
                     SiteAccess = request.Sites != null ? string.Join(",", request.Sites) : "",
                     CreatedAt = DateTime.Now
                 };
@@ -78,7 +90,12 @@ namespace AlcoConnectWatch.Controllers
                     user.Email = request.Email;
 
                 if (!string.IsNullOrEmpty(request.Password))
-                    user.PasswordHash = DbInitializer.HashPassword(request.Password);
+                {
+                    // Generate new salt and hash for password update
+                    var newSalt = AuthTokenService.GenerateSalt();
+                    user.PasswordSalt = newSalt;
+                    user.PasswordHash = AuthTokenService.HashPassword(request.Password, newSalt);
+                }
 
                 if (request.Sites != null)
                     user.SiteAccess = string.Join(",", request.Sites);

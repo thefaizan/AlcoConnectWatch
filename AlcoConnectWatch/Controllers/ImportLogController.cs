@@ -1,10 +1,12 @@
 using System.Linq;
 using System.Web.Http;
 using AlcoConnectWatch.Data;
+using AlcoConnectWatch.Filters;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/importlogs")]
+    [RequireAuth]
     public class ImportLogController : ApiController
     {
         [HttpGet]

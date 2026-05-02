@@ -3,11 +3,13 @@ using System.Web.Http;
 using AlcoConnectWatch.Services;
 using AlcoConnectWatch.Models.DTOs;
 using AlcoConnectWatch.Data;
+using AlcoConnectWatch.Filters;
 using System.Linq;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/report")]
+    [RequireAuth]
     public class ReportController : ApiController
     {
         [HttpPost]

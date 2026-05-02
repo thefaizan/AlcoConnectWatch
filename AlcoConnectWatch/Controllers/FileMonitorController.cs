@@ -5,10 +5,12 @@ using System.Web.Http;
 using AlcoConnectWatch.Data;
 using AlcoConnectWatch.Models.DTOs;
 using AlcoConnectWatch.Services;
+using AlcoConnectWatch.Filters;
 
 namespace AlcoConnectWatch.Controllers
 {
     [RoutePrefix("api/filemonitor")]
+    [RequireAuth]
     public class FileMonitorController : ApiController
     {
         [HttpGet]

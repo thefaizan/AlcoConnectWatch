@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Security.Cryptography;
 using System.Text;
 using AlcoConnectWatch.Models;
+using AlcoConnectWatch.Services;
 
 namespace AlcoConnectWatch.Data
 {
@@ -10,10 +11,15 @@ namespace AlcoConnectWatch.Data
     {
         protected override void Seed(AlcoConnectWatchContext context)
         {
+            // Create admin user with salted password
+            var salt = AuthTokenService.GenerateSalt();
+            var hashedPassword = AuthTokenService.HashPassword("admin123", salt);
+
             context.Users.Add(new User
             {
                 Email = "admin@alcoconnectwatch.com",
-                PasswordHash = HashPassword("admin123"),
+                PasswordHash = hashedPassword,
+                PasswordSalt = salt,
                 SiteAccess = "Dalgaranga,Mt Magnet,Edna May",
                 CreatedAt = DateTime.Now
             });
@@ -40,6 +46,7 @@ namespace AlcoConnectWatch.Data
             base.Seed(context);
         }
 
+        // Legacy method - kept for backwards compatibility during migration
         public static string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -47,6 +54,12 @@ namespace AlcoConnectWatch.Data
                 var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return Convert.ToBase64String(bytes);
             }
+        }
+
+        // New method with salt
+        public static string HashPasswordWithSalt(string password, string salt)
+        {
+            return AuthTokenService.HashPassword(password, salt);
         }
     }
 }
