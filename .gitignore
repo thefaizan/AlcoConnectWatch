@@ -20,6 +20,9 @@ nuget.exe
 !Files/
 !Files/*.xlsx
 !Files/*.pdf
+!**/Files/
+!**/Files/*.xlsx
+!**/Files/*.pdf
 
 ## Frontend source (separate from project copy)
 frontend/

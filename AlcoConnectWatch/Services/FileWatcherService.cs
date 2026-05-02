@@ -69,7 +69,10 @@ namespace AlcoConnectWatch.Services
                     var watchFolderSetting = db.AppSettings.Find("WatchFolderPath");
                     _watchFolder = watchFolderSetting?.SettingValue
                         ?? System.Configuration.ConfigurationManager.AppSettings["WatchFolderPath"]
-                        ?? @"C:\AlcoConnectWatch\WatchFolder";
+                        ?? "Files";
+
+                    // Resolve relative paths to application base directory
+                    _watchFolder = ResolvePath(_watchFolder);
 
                     var intervalSetting = db.AppSettings.Find("ScanIntervalMinutes");
                     int interval;
@@ -82,9 +85,41 @@ namespace AlcoConnectWatch.Services
             catch
             {
                 _watchFolder = System.Configuration.ConfigurationManager.AppSettings["WatchFolderPath"]
-                    ?? @"C:\AlcoConnectWatch\WatchFolder";
+                    ?? "Files";
+                _watchFolder = ResolvePath(_watchFolder);
                 _scanIntervalMinutes = 5;
             }
+        }
+
+        private string ResolvePath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return path;
+
+            // Skip URLs
+            if (path.StartsWith("http://") || path.StartsWith("https://"))
+                return null;
+
+            // Handle ~/path format
+            if (path.StartsWith("~/"))
+                path = path.Substring(2);
+
+            // If already absolute path, return as-is
+            if (Path.IsPathRooted(path))
+                return path;
+
+            // Resolve relative path from application base directory
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // For web apps, try to get the actual web root
+            try
+            {
+                if (System.Web.Hosting.HostingEnvironment.IsHosted)
+                    basePath = System.Web.Hosting.HostingEnvironment.MapPath("~") ?? basePath;
+            }
+            catch { }
+
+            return Path.Combine(basePath, path);
         }
 
         private void ScanFolder(object state)
