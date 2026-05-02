@@ -21,3 +21,10 @@ packages/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+
+
+## But allow Files folder for watch folder
+!Files/
+!Files/*.xlsx
+!Files/*.pdf
