@@ -13,14 +13,14 @@ namespace AlcoConnectWatch
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<AlcoConnectWatchContext, Configuration>());
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<AlcoConnectWatchContext, Configuration>());
 
-            using (var context = new AlcoConnectWatchContext())
-            {
-                context.Database.Initialize(false);
-            }
+            //using (var context = new AlcoConnectWatchContext())
+            //{
+            //    context.Database.Initialize(false);
+            //}
 
-            FileWatcherService.Instance.Start();
+            //FileWatcherService.Instance.Start();
         }
 
         protected void Application_End()
