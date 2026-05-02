@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
@@ -75,6 +76,46 @@ namespace AlcoConnectWatch.Controllers
         {
             FileWatcherService.Instance.Restart();
             return Ok(new { success = true, message = "File watcher restarted" });
+        }
+
+        [HttpGet]
+        [Route("debug")]
+        public IHttpActionResult Debug()
+        {
+            var watcher = FileWatcherService.Instance;
+            var watchFolder = watcher.WatchFolder;
+
+            var result = new
+            {
+                watchFolder = watchFolder,
+                folderExists = !string.IsNullOrEmpty(watchFolder) && System.IO.Directory.Exists(watchFolder),
+                files = new List<string>(),
+                error = ""
+            };
+
+            try
+            {
+                if (result.folderExists)
+                {
+                    var files = System.IO.Directory.GetFiles(watchFolder, "*.xlsx");
+                    foreach (var f in files)
+                    {
+                        ((List<string>)result.files).Add(System.IO.Path.GetFileName(f));
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                result = new
+                {
+                    watchFolder = watchFolder,
+                    folderExists = false,
+                    files = new List<string>(),
+                    error = ex.Message
+                };
+            }
+
+            return Ok(result);
         }
 
         private string ExtractSiteFromFileName(string fileName)
