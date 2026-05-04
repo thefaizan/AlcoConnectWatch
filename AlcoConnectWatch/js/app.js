@@ -8,7 +8,8 @@ function app() {
 
     user: JSON.parse(localStorage.getItem('acw_user') || '{"name":"Admin","email":"","role":"Administrator","initials":"AD"}'),
 
-    sites: [],
+      sites: [],
+      allSites: [],
 
     stats: {
       filesProcessed: 0,
@@ -110,7 +111,15 @@ function app() {
       } catch (e) {
         this.sites = ['Dalgaranga', 'Mt Magnet', 'Edna May'];
       }
-    },
+      },
+      async loadAllSites() {
+          try {
+              var data = await this.apiFetch('settings');
+              this.allSites = data.sites || ['Dalgaranga', 'Mt Magnet', 'Edna May'];
+          } catch (e) {
+              this.allSites = ['Dalgaranga', 'Mt Magnet', 'Edna May'];
+          }
+      },
 
     async loadDashboard() {
       try {
@@ -372,7 +381,8 @@ function app() {
 
     async loadUsers() {
       try {
-        this.users = await this.apiFetch('users');
+          this.users = await this.apiFetch('users');
+          await this.loadAllSites();  // ← YE ADD KARO
       } catch (e) {
         console.error('Failed to load users:', e);
       }
@@ -428,8 +438,8 @@ function app() {
           });
         }
         this.userModal.open = false;
-          await this.loadUsers();
-          //await this.loadSites();
+        await this.loadUsers();
+
       } catch (e) {
         alert('Failed to save user: ' + e.message);
       }

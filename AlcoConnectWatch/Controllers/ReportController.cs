@@ -33,28 +33,25 @@ namespace AlcoConnectWatch.Controllers
         {
             using (var db = new AlcoConnectWatchContext())
             {
+                // Get current user from auth token
+                var userId = Request.Properties.ContainsKey("UserId")
+                    ? (int)Request.Properties["UserId"]
+                    : 0;
 
-                //// Get current user from auth token
-                //var userId = Request.Properties.ContainsKey("UserId")
-                //    ? (int)Request.Properties["UserId"]
-                //    : 0;
-
-                //if (userId > 0)
-                //{
-                //    var user = db.Users.Find(userId);
-                //    if (user != null && !string.IsNullOrEmpty(user.SiteAccess))
-                //    {
-                //        // Return only user's assigned sites
-                //        var userSites = user.SiteAccess
-                //            .Split(',')
-                //            .Select(s => s.Trim())
-                //            .Where(s => !string.IsNullOrEmpty(s))
-                //            .ToList();
-                //        return Ok(userSites);
-                //    }
-                //}
-
-
+                if (userId > 0)
+                {
+                    var user = db.Users.Find(userId);
+                    if (user != null && !string.IsNullOrEmpty(user.SiteAccess))
+                    {
+                        // Return only user's assigned sites
+                        var userSites = user.SiteAccess
+                            .Split(',')
+                            .Select(s => s.Trim())
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .ToList();
+                        return Ok(userSites);
+                    }
+                }
                 var siteSetting = db.AppSettings.Find("Sites");
                 if (siteSetting != null)
                 {

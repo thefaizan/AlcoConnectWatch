@@ -1878,7 +1878,7 @@
                     Select the sites this user is allowed to access
                   </p>
                   <div class="space-y-2">
-                    <template x-for="site in sites" :key="site">
+                    <template x-for="site in allSites" :key="site">
                       <label
                         class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
                         :class="userModal.form.sites.includes(site)
