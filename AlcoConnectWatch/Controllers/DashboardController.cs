@@ -23,10 +23,33 @@ namespace AlcoConnectWatch.Controllers
                 var filesToday = db.FileImportLogs
                     .Count(f => DbFunctions.TruncateTime(f.ImportedAt) == today);
 
-                var siteSetting = db.AppSettings.Find("Sites");
-                var sites = siteSetting != null
-                    ? siteSetting.SettingValue.Split(',').Select(s => s.Trim()).ToList()
-                    : new System.Collections.Generic.List<string>();
+                // Get user's assigned sites
+                var userId = Request.Properties.ContainsKey("UserId")
+                    ? (int)Request.Properties["UserId"]
+                    : 0;
+
+                var sites = new System.Collections.Generic.List<string>();
+                if (userId > 0)
+                {
+                    var user = db.Users.Find(userId);
+                    if (user != null && !string.IsNullOrEmpty(user.SiteAccess))
+                    {
+                        sites = user.SiteAccess
+                            .Split(',')
+                            .Select(s => s.Trim())
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .ToList();
+                    }
+                }
+
+                // Fallback to all sites if no user sites
+                if (sites.Count == 0)
+                {
+                    var siteSetting = db.AppSettings.Find("Sites");
+                    sites = siteSetting != null
+                        ? siteSetting.SettingValue.Split(',').Select(s => s.Trim()).ToList()
+                        : new System.Collections.Generic.List<string> { "Dalgaranga", "Mt Magnet", "Edna May" };
+                }
 
                 var latestDate = db.EvacRecords
                     .OrderByDescending(e => e.RosterDate)
