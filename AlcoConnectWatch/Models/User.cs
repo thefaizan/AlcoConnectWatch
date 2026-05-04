@@ -26,6 +26,9 @@ namespace AlcoConnectWatch.Models
         [StringLength(500)]
         public string SiteAccess { get; set; }
 
+        [StringLength(50)]
+        public string Role { get; set; } = "User";
+
         public DateTime CreatedAt { get; set; }
     }
 }

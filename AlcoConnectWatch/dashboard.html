@@ -101,6 +101,7 @@
           <span class="nav-label">Reports</span>
         </div>
         <div
+          x-show="user.role === 'Admin'"
           @click="navigateTo('file-monitor')"
           class="sidebar-nav-item"
           :class="{ 'active': currentView === 'file-monitor' }"
@@ -109,6 +110,7 @@
           <span class="nav-label">File Monitor</span>
         </div>
         <div
+          x-show="user.role === 'Admin'"
           @click="navigateTo('import-logs')"
           class="sidebar-nav-item"
           :class="{ 'active': currentView === 'import-logs' }"
@@ -117,6 +119,7 @@
           <span class="nav-label">Import Logs</span>
         </div>
         <div
+          x-show="user.role === 'Admin'"
           @click="navigateTo('users')"
           class="sidebar-nav-item"
           :class="{ 'active': currentView === 'users' }"
@@ -125,6 +128,7 @@
           <span class="nav-label">Users</span>
         </div>
         <div
+          x-show="user.role === 'Admin'"
           @click="navigateTo('settings')"
           class="sidebar-nav-item"
           :class="{ 'active': currentView === 'settings' }"
@@ -217,6 +221,7 @@
                 <p class="text-xs text-gray-400" x-text="user.email"></p>
               </div>
               <button
+                x-show="user.role === 'Admin'"
                 @click="navigateTo('settings'); showUserMenu = false"
                 class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
               >
@@ -415,6 +420,7 @@
                   <div class="gold-accent"></div>
                 </div>
                 <button
+                  x-show="user.role === 'Admin'"
                   @click="navigateTo('import-logs')"
                   class="text-sm text-gold-600 hover:text-gold-700 font-semibold"
                 >
@@ -479,6 +485,7 @@
                     <i class="bi bi-chevron-right text-gray-300 ms-auto"></i>
                   </button>
                   <button
+                    x-show="user.role === 'Admin'"
                     @click="navigateTo('file-monitor')"
                     class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition-colors text-left"
                   >
@@ -496,6 +503,7 @@
                     <i class="bi bi-chevron-right text-gray-300 ms-auto"></i>
                   </button>
                   <button
+                    x-show="user.role === 'Admin'"
                     @click="navigateTo('import-logs')"
                     class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-50 transition-colors text-left"
                   >
@@ -1835,38 +1843,46 @@
                 <div>
                   <label
                     class="block text-sm font-semibold text-gray-700 mb-1.5"
-                    >Email Address</label
+                    >Email Address <span class="text-red-500">*</span></label
                   >
                   <div class="relative">
                     <input
                       type="email"
                       x-model="userModal.form.email"
                       class="setting-input !pl-10"
+                      :class="userModal.submitted && !userModal.form.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                       placeholder="e.g. john@company.com"
                     />
                     <i
                       class="bi bi-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                     ></i>
                   </div>
+                  <p x-show="userModal.submitted && !userModal.form.email" class="text-red-500 text-xs mt-1">
+                    <i class="bi bi-exclamation-circle me-1"></i>Email is required
+                  </p>
                 </div>
 
                 <!-- Password -->
                 <div>
                   <label
                     class="block text-sm font-semibold text-gray-700 mb-1.5"
-                    >Password</label
+                    >Password <span class="text-red-500">*</span></label
                   >
                   <div class="relative">
                     <input
                       type="password"
                       x-model="userModal.form.password"
                       class="setting-input !pl-10"
+                      :class="userModal.submitted && !userModal.form.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                       placeholder="Enter password"
                     />
                     <i
                       class="bi bi-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                     ></i>
                   </div>
+                  <p x-show="userModal.submitted && !userModal.form.password" class="text-red-500 text-xs mt-1">
+                    <i class="bi bi-exclamation-circle me-1"></i>Password is required
+                  </p>
                 </div>
 
                 <!-- Site Access Checkboxes -->

@@ -69,6 +69,7 @@ function app() {
       open: false,
       editing: false,
       editId: null,
+      submitted: false,
       form: { email: '', password: '', sites: [] },
     },
 
@@ -403,6 +404,7 @@ function app() {
     openUserModal() {
       this.userModal.editing = false;
       this.userModal.editId = null;
+      this.userModal.submitted = false;
       this.userModal.form = { email: '', password: '', sites: [] };
       this.userModal.open = true;
     },
@@ -412,6 +414,7 @@ function app() {
       if (!u) return;
       this.userModal.editing = true;
       this.userModal.editId = id;
+      this.userModal.submitted = false;
       this.userModal.form = {
         email: u.email,
         password: u.password,
@@ -427,6 +430,7 @@ function app() {
     },
 
     async saveUser() {
+      this.userModal.submitted = true;
       if (!this.userModal.form.email || !this.userModal.form.password) return;
       try {
         if (this.userModal.editing) {

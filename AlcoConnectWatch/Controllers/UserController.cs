@@ -28,6 +28,7 @@ namespace AlcoConnectWatch.Controllers
                         Id = u.Id,
                         Email = u.Email,
                         Password = new string('*', 8),
+                        Role = u.Role ?? "User",
                         Sites = string.IsNullOrEmpty(u.SiteAccess)
                             ? new List<string>()
                             : u.SiteAccess.Split(',').Select(s => s.Trim()).ToList(),
@@ -65,6 +66,7 @@ namespace AlcoConnectWatch.Controllers
                     PasswordHash = hashedPassword,
                     PasswordSalt = salt,
                     SiteAccess = request.Sites != null ? string.Join(",", request.Sites) : "",
+                    Role = "User",
                     CreatedAt = DateTime.Now
                 };
 

@@ -21,6 +21,7 @@ namespace AlcoConnectWatch.Data
                 PasswordHash = hashedPassword,
                 PasswordSalt = salt,
                 SiteAccess = "Dalgaranga,Mt Magnet,Edna May",
+                Role = "Admin",
                 CreatedAt = DateTime.Now
             });
 

@@ -77,7 +77,7 @@ namespace AlcoConnectWatch.Controllers
                     {
                         Name = namePart.Replace(".", " ").ToUpper(),
                         Email = user.Email,
-                        Role = "Administrator",
+                        Role = user.Role ?? "User",
                         Initials = initials
                     }
                 });
