@@ -429,7 +429,7 @@ function app() {
         }
         this.userModal.open = false;
           await this.loadUsers();
-          await this.loadSites();
+          //await this.loadSites();
       } catch (e) {
         alert('Failed to save user: ' + e.message);
       }
