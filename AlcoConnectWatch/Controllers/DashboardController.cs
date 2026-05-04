@@ -76,7 +76,7 @@ namespace AlcoConnectWatch.Controllers
 
                 // Get latest date for user's sites
                 var latestDate = db.EvacRecords
-                    .Where(e => userSites.Contains(e.SiteName))
+                    .Where(e => userSites.Contains(e.WorkSite))
                     .OrderByDescending(e => e.RosterDate)
                     .Select(e => e.RosterDate)
                     .FirstOrDefault();
@@ -86,11 +86,11 @@ namespace AlcoConnectWatch.Controllers
 
                 if (latestDate != default(DateTime))
                 {
-                    var totalEvac = db.EvacRecords.Count(e => e.RosterDate == latestDate && userSites.Contains(e.SiteName));
+                    var totalEvac = db.EvacRecords.Count(e => e.RosterDate == latestDate && userSites.Contains(e.WorkSite));
                     if (totalEvac > 0)
                     {
                         var evacIds = db.EvacRecords
-                            .Where(e => e.RosterDate == latestDate && userSites.Contains(e.SiteName))
+                            .Where(e => e.RosterDate == latestDate && userSites.Contains(e.WorkSite))
                             .Select(e => e.ExtractedId)
                             .ToList();
 
