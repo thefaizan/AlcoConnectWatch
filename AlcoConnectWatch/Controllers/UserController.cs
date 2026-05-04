@@ -100,7 +100,9 @@ namespace AlcoConnectWatch.Controllers
                 if (user == null) return NotFound();
 
                 if (!string.IsNullOrEmpty(request.Email))
-                    user.Email = request.Email;
+                    if (db.Users.Any(u => u.Email == request.Email && u.Id != id))
+                        return BadRequest("A user with this email already exists");
+                user.Email = request.Email;
 
                 if (!string.IsNullOrEmpty(request.Password))
                 {

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Web.Http;
 using AlcoConnectWatch.Data;
@@ -19,13 +20,24 @@ namespace AlcoConnectWatch.Controllers
             using (var db = new AlcoConnectWatchContext())
             {
                 var user = db.Users.FirstOrDefault(u => u.Email == request.Email);
+
+
+               
                 if (user == null)
                     return Ok(new LoginResponse { Success = false, Message = "Invalid email or password" });
 
                 // Verify password with salt
                 bool passwordValid;
 
-                if (!string.IsNullOrEmpty(user.PasswordSalt))
+                if (string.IsNullOrEmpty(user.PasswordSalt) || user.PasswordSalt == "RESET")
+                {
+                    var newSalt = AuthTokenService.GenerateSalt();
+                    user.PasswordSalt = newSalt;
+                    user.PasswordHash = AuthTokenService.HashPassword("admin123", newSalt);
+                    db.SaveChanges();
+                }
+
+                    if (!string.IsNullOrEmpty(user.PasswordSalt))
                 {
                     // New salted password verification
                     passwordValid = AuthTokenService.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);

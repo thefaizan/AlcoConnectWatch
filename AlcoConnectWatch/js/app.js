@@ -86,7 +86,19 @@ function app() {
       options = options || {};
       options.headers = this.authHeaders;
       var res = await fetch('api/' + url, options);
-      if (!res.ok) throw new Error('API error: ' + res.status);
+      if (!res.ok) {
+        // Try to get error message from response body
+        try {
+          var errorData = await res.json();
+          var errorMsg = errorData.Message || errorData.message || errorData.error || ('API error: ' + res.status);
+          throw new Error(errorMsg);
+        } catch (parseError) {
+          if (parseError.message && !parseError.message.includes('API error')) {
+            throw parseError; // Re-throw if it's our custom error
+          }
+          throw new Error('API error: ' + res.status);
+        }
+      }
       return res.json();
     },
 
