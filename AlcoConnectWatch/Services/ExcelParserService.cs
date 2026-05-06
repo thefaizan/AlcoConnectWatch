@@ -20,7 +20,7 @@ namespace AlcoConnectWatch.Services
         {
             if (fileName.IndexOf("Evac Report", StringComparison.OrdinalIgnoreCase) >= 0)
                 return "Evac";
-            if (fileName.IndexOf("breathalyser", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (fileName.IndexOf("breathalyser_activity_report_", StringComparison.OrdinalIgnoreCase) >= 0)
                 return "AlcoConnect";
             return null;
         }

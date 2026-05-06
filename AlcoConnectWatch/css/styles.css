@@ -625,7 +625,7 @@ body {
   padding: 0 28px;
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 100;
 }
 
 /* ---------- Main Content Area ---------- */
