@@ -1049,7 +1049,7 @@
                     <tbody>
                       <template
                         x-for="(row, idx) in filteredEvacOnly"
-                        :key="row.extractedId"
+                        :key="idx"
                       >
                         <tr :style="'animation-delay:' + (idx * 0.04) + 's'">
                           <td
@@ -1126,7 +1126,7 @@
                     <tbody>
                       <template
                         x-for="(row, idx) in filteredAlcoOnly"
-                        :key="row.staffId"
+                        :key="idx"
                       >
                         <tr :style="'animation-delay:' + (idx * 0.04) + 's'">
                           <td
@@ -1214,7 +1214,7 @@
                     <tbody>
                       <template
                         x-for="(row, idx) in filteredMatched"
-                        :key="row.extractedId"
+                        :key="idx"
                       >
                         <tr :style="'animation-delay:' + (idx * 0.04) + 's'">
                           <td
