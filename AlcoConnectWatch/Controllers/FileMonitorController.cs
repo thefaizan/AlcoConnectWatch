@@ -83,8 +83,10 @@ namespace AlcoConnectWatch.Controllers
             if (fileName.IndexOf("DAL", StringComparison.OrdinalIgnoreCase) >= 0) return "Dalgaranga";
             if (fileName.IndexOf("MTM", StringComparison.OrdinalIgnoreCase) >= 0) return "Mt Magnet";
             if (fileName.IndexOf("EDM", StringComparison.OrdinalIgnoreCase) >= 0) return "Edna May";
-            if (fileName.IndexOf("Dalgaranga", StringComparison.OrdinalIgnoreCase) >= 0) return "Dalgaranga";
-            return "Unknown";
+            if (fileName.IndexOf("Dalgaranga", StringComparison.OrdinalIgnoreCase) >= 0) return "Dalgaranga"; 
+            if (fileName.IndexOf("breathalyser", StringComparison.OrdinalIgnoreCase) >= 0) return "breathalyser";
+            if (fileName.IndexOf("Evac", StringComparison.OrdinalIgnoreCase) >= 0) return "Evac";
+            return "Unknown"; 
         }
 
         private string FormatTimeAgo(DateTime dateTime)
