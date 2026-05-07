@@ -1516,10 +1516,11 @@
                     <th>ID</th>
                     <th>File Name</th>
                     <th>Type</th>
-                    <th>Rows</th>
-                    <th>Dupes Skipped</th>
+                    <th>Total Rows</th>
+                    <th>Imported</th>
+                    <th>Skipped</th>
                     <th>Status</th>
-                    <th>Error</th>
+                    <th>Details</th>
                     <th>Imported At</th>
                   </tr>
                 </thead>
@@ -1549,21 +1550,24 @@
                           x-text="log.fileType"
                         ></span>
                       </td>
-                      <td
-                        class="font-mono font-bold"
-                        x-text="log.rowCount"
-                      ></td>
+                      <td class="font-mono text-gray-500" x-text="log.totalRowsInFile || '—'"></td>
+                      <td class="font-mono font-bold text-green-600" x-text="log.rowCount"></td>
                       <td>
-                        <span
-                          x-show="log.duplicatesSkipped > 0"
-                          class="text-amber-600 font-semibold"
-                          x-text="log.duplicatesSkipped"
-                        ></span>
-                        <span
-                          x-show="log.duplicatesSkipped === 0"
-                          class="text-gray-300"
-                          >&mdash;</span
-                        >
+                        <div class="flex flex-wrap gap-1">
+                          <span x-show="log.duplicatesSkipped > 0" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-medium">
+                            <i class="bi bi-copy text-[10px]"></i> <span x-text="log.duplicatesSkipped"></span> dupes
+                          </span>
+                          <span x-show="log.skippedEmptyRows > 0" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 text-xs font-medium">
+                            <i class="bi bi-dash-circle text-[10px]"></i> <span x-text="log.skippedEmptyRows"></span> empty
+                          </span>
+                          <span x-show="log.skippedInvalidDate > 0" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 text-red-600 text-xs font-medium">
+                            <i class="bi bi-calendar-x text-[10px]"></i> <span x-text="log.skippedInvalidDate"></span> bad date
+                          </span>
+                          <span x-show="log.skippedOtherErrors > 0" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 text-purple-600 text-xs font-medium">
+                            <i class="bi bi-exclamation text-[10px]"></i> <span x-text="log.skippedOtherErrors"></span> other
+                          </span>
+                          <span x-show="!log.duplicatesSkipped && !log.skippedEmptyRows && !log.skippedInvalidDate && !log.skippedOtherErrors" class="text-gray-300">&mdash;</span>
+                        </div>
                       </td>
                       <td>
                         <span
@@ -1577,7 +1581,8 @@
                       <td>
                         <span
                           x-show="log.errorMessage"
-                          class="text-xs text-red-600"
+                          class="text-xs text-orange-600 max-w-[200px] block truncate"
+                          :title="log.errorMessage"
                           x-text="log.errorMessage"
                         ></span>
                         <span x-show="!log.errorMessage" class="text-gray-300"

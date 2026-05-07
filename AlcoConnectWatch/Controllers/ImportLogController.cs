@@ -25,6 +25,10 @@ namespace AlcoConnectWatch.Controllers
                         FileType = f.FileType,
                         RowCount = f.RowCount,
                         DuplicatesSkipped = f.DuplicatesSkipped,
+                        TotalRowsInFile = f.TotalRowsInFile,
+                        SkippedEmptyRows = f.SkippedEmptyRows,
+                        SkippedInvalidDate = f.SkippedInvalidDate,
+                        SkippedOtherErrors = f.SkippedOtherErrors,
                         Status = f.Status,
                         ErrorMessage = f.ErrorMessage,
                         ImportedAt = f.ImportedAt

@@ -112,6 +112,7 @@
     <Compile Include="Models\DTOs\DashboardDTOs.cs" />
     <Compile Include="Models\DTOs\UserDTOs.cs" />
     <Compile Include="Models\DTOs\SettingsDTOs.cs" />
+    <Compile Include="Models\DTOs\ParseResultDTO.cs" />
     <Compile Include="Data\AlcoConnectWatchContext.cs" />
     <Compile Include="Data\DbInitializer.cs" />
     <Compile Include="Services\ExcelParserService.cs" />

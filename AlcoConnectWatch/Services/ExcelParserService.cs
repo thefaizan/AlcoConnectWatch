@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using AlcoConnectWatch.Models;
+using AlcoConnectWatch.Models.DTOs;
 
 namespace AlcoConnectWatch.Services
 {
@@ -35,8 +36,14 @@ namespace AlcoConnectWatch.Services
 
         public static List<EvacRecord> ParseEvacFile(string filePath, out string error)
         {
-            error = null;
-            var records = new List<EvacRecord>();
+            var result = ParseEvacFileDetailed(filePath);
+            error = result.Error ?? result.GetDetailedMessage();
+            return result.Success ? result.Records : null;
+        }
+
+        public static ParseResult<EvacRecord> ParseEvacFileDetailed(string filePath)
+        {
+            var result = new ParseResult<EvacRecord>();
             var fileName = Path.GetFileName(filePath);
 
             try
@@ -54,22 +61,33 @@ namespace AlcoConnectWatch.Services
                             headers[headerText] = col;
                     }
 
+                    // Check for missing columns
+                    var missingColumns = new List<string>();
                     foreach (var requiredCol in EvacRequiredColumns)
                     {
                         if (!headers.ContainsKey(requiredCol))
-                        {
-                            error = $"Missing required column: {requiredCol}";
-                            return null;
-                        }
+                            missingColumns.Add(requiredCol);
+                    }
+
+                    if (missingColumns.Count > 0)
+                    {
+                        result.Error = $"Missing columns: {string.Join(", ", missingColumns)}";
+                        result.Success = false;
+                        return result;
                     }
 
                     var lastRow = worksheet.LastRowUsed().RowNumber();
+                    result.TotalRowsInFile = lastRow - 1; // Excluding header
                     var now = DateTime.Now;
 
                     for (int row = 2; row <= lastRow; row++)
                     {
                         var name = worksheet.Cell(row, headers["Name"]).GetString().Trim();
-                        if (string.IsNullOrWhiteSpace(name)) continue;
+                        if (string.IsNullOrWhiteSpace(name))
+                        {
+                            result.SkippedEmptyRows++;
+                            continue;
+                        }
 
                         var imaOpenInx = worksheet.Cell(row, headers["IMAOpenINX"]).GetString().Trim();
                         var rosterDateStr = worksheet.Cell(row, headers["RosterDate"]).GetString().Trim();
@@ -78,10 +96,14 @@ namespace AlcoConnectWatch.Services
                         if (!TryParseDate(rosterDateStr, out rosterDate))
                         {
                             try { rosterDate = worksheet.Cell(row, headers["RosterDate"]).GetDateTime(); }
-                            catch { continue; }
+                            catch
+                            {
+                                result.SkippedInvalidDate++;
+                                continue;
+                            }
                         }
 
-                        records.Add(new EvacRecord
+                        result.Records.Add(new EvacRecord
                         {
                             Workgroup = worksheet.Cell(row, headers["workgroup"]).GetString().Trim(),
                             Name = name,
@@ -97,21 +119,29 @@ namespace AlcoConnectWatch.Services
                             ImportedAt = now
                         });
                     }
+
+                    result.Success = true;
                 }
             }
             catch (Exception ex)
             {
-                error = ex.Message;
-                return null;
+                result.Error = ex.Message;
+                result.Success = false;
             }
 
-            return records;
+            return result;
         }
 
         public static List<AlcoConnectRecord> ParseAlcoConnectFile(string filePath, out string error)
         {
-            error = null;
-            var records = new List<AlcoConnectRecord>();
+            var result = ParseAlcoConnectFileDetailed(filePath);
+            error = result.Error ?? result.GetDetailedMessage();
+            return result.Success ? result.Records : null;
+        }
+
+        public static ParseResult<AlcoConnectRecord> ParseAlcoConnectFileDetailed(string filePath)
+        {
+            var result = new ParseResult<AlcoConnectRecord>();
             var fileName = Path.GetFileName(filePath);
 
             try
@@ -129,29 +159,44 @@ namespace AlcoConnectWatch.Services
                             headers[headerText] = col;
                     }
 
+                    // Check for missing columns
+                    var missingColumns = new List<string>();
                     foreach (var requiredCol in AlcoRequiredColumns)
                     {
                         if (!headers.ContainsKey(requiredCol))
-                        {
-                            error = $"Missing required column: {requiredCol}";
-                            return null;
-                        }
+                            missingColumns.Add(requiredCol);
+                    }
+
+                    if (missingColumns.Count > 0)
+                    {
+                        result.Error = $"Missing columns: {string.Join(", ", missingColumns)}";
+                        result.Success = false;
+                        return result;
                     }
 
                     var lastRow = worksheet.LastRowUsed().RowNumber();
+                    result.TotalRowsInFile = lastRow - 1; // Excluding header
                     var now = DateTime.Now;
 
                     for (int row = 2; row <= lastRow; row++)
                     {
                         var staffId = worksheet.Cell(row, headers["Staff ID"]).GetString().Trim();
-                        if (string.IsNullOrWhiteSpace(staffId)) continue;
+                        if (string.IsNullOrWhiteSpace(staffId))
+                        {
+                            result.SkippedEmptyRows++;
+                            continue;
+                        }
 
                         var dateStr = worksheet.Cell(row, headers["Date"]).GetString().Trim();
                         DateTime testDate;
                         if (!TryParseDate(dateStr, out testDate))
                         {
                             try { testDate = worksheet.Cell(row, headers["Date"]).GetDateTime(); }
-                            catch { continue; }
+                            catch
+                            {
+                                result.SkippedInvalidDate++;
+                                continue;
+                            }
                         }
 
                         var timeStr = worksheet.Cell(row, headers["Time"]).GetString().Trim();
@@ -159,7 +204,7 @@ namespace AlcoConnectWatch.Services
                         if (!TimeSpan.TryParse(timeStr, out testTime))
                             testTime = TimeSpan.Zero;
 
-                        records.Add(new AlcoConnectRecord
+                        result.Records.Add(new AlcoConnectRecord
                         {
                             Site = worksheet.Cell(row, headers["Site"]).GetString().Trim(),
                             StaffId = staffId,
@@ -178,15 +223,17 @@ namespace AlcoConnectWatch.Services
                             ImportedAt = now
                         });
                     }
+
+                    result.Success = true;
                 }
             }
             catch (Exception ex)
             {
-                error = ex.Message;
-                return null;
+                result.Error = ex.Message;
+                result.Success = false;
             }
 
-            return records;
+            return result;
         }
 
         private static bool TryParseDate(string dateStr, out DateTime result)

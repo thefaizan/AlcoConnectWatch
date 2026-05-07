@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using AlcoConnectWatch.Data;
 using AlcoConnectWatch.Models;
+using AlcoConnectWatch.Models.DTOs;
 
 namespace AlcoConnectWatch.Services
 {
@@ -117,7 +118,7 @@ namespace AlcoConnectWatch.Services
                 var fileType = ExcelParserService.DetectFileType(fileName);
                 if (fileType == null)
                 {
-                    LogImport(db, fileName, "Unknown", 0, 0, "Error", "Unrecognized file type");
+                    LogImport(db, fileName, "Unknown", 0, 0, "Error", "The imported file format must be 'Evac Report' or 'breathalyser_activity_report_'");
                     return;
                 }
 
@@ -130,42 +131,40 @@ namespace AlcoConnectWatch.Services
 
         private void ProcessEvacFile(AlcoConnectWatchContext db, string filePath, string fileName)
         {
-            string error;
-            var records = ExcelParserService.ParseEvacFile(filePath, out error);
+            var result = ExcelParserService.ParseEvacFileDetailed(filePath);
 
-            if (records == null)
+            if (!result.Success)
             {
-                LogImport(db, fileName, "Evac", 0, 0, "Error", error ?? "Failed to parse file");
+                LogImportDetailed(db, fileName, "Evac", 0, 0, result, "Error");
                 return;
             }
 
             int imported = 0;
-            foreach (var record in records)
+            foreach (var record in result.Records)
             {
                 db.EvacRecords.Add(record);
                 imported++;
             }
 
             db.SaveChanges();
-            LogImport(db, fileName, "Evac", imported, 0, "Success", null);
+            LogImportDetailed(db, fileName, "Evac", imported, 0, result, "Success");
             MoveToProcessed(filePath);
         }
 
         private void ProcessAlcoConnectFile(AlcoConnectWatchContext db, string filePath, string fileName)
         {
-            string error;
-            var records = ExcelParserService.ParseAlcoConnectFile(filePath, out error);
+            var result = ExcelParserService.ParseAlcoConnectFileDetailed(filePath);
 
-            if (records == null)
+            if (!result.Success)
             {
-                LogImport(db, fileName, "AlcoConnect", 0, 0, "Error", error ?? "Failed to parse file");
+                LogImportDetailed(db, fileName, "AlcoConnect", 0, 0, result, "Error");
                 return;
             }
 
             int imported = 0;
             int duplicatesSkipped = 0;
 
-            foreach (var record in records)
+            foreach (var record in result.Records)
             {
                 var staffIdNormalized = record.StaffId.TrimStart('0');
                 var isDuplicate = db.AlcoConnectRecords.Any(a =>
@@ -185,7 +184,7 @@ namespace AlcoConnectWatch.Services
             }
 
             db.SaveChanges();
-            LogImport(db, fileName, "AlcoConnect", imported, duplicatesSkipped, "Success", null);
+            LogImportDetailed(db, fileName, "AlcoConnect", imported, duplicatesSkipped, result, "Success");
             MoveToProcessed(filePath);
         }
 
@@ -200,6 +199,26 @@ namespace AlcoConnectWatch.Services
                 DuplicatesSkipped = duplicatesSkipped,
                 Status = status,
                 ErrorMessage = errorMessage,
+                ImportedAt = DateTime.Now
+            });
+            db.SaveChanges();
+        }
+
+        private void LogImportDetailed<T>(AlcoConnectWatchContext db, string fileName, string fileType,
+            int rowCount, int duplicatesSkipped, ParseResult<T> result, string status)
+        {
+            db.FileImportLogs.Add(new FileImportLog
+            {
+                FileName = fileName,
+                FileType = fileType,
+                RowCount = rowCount,
+                DuplicatesSkipped = duplicatesSkipped,
+                TotalRowsInFile = result.TotalRowsInFile,
+                SkippedEmptyRows = result.SkippedEmptyRows,
+                SkippedInvalidDate = result.SkippedInvalidDate,
+                SkippedOtherErrors = result.SkippedOtherErrors,
+                Status = status,
+                ErrorMessage = result.GetDetailedMessage(),
                 ImportedAt = DateTime.Now
             });
             db.SaveChanges();

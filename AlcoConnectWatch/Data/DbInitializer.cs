@@ -20,7 +20,7 @@ namespace AlcoConnectWatch.Data
                 Email = "admin@alcoconnectwatch.com",
                 PasswordHash = hashedPassword,
                 PasswordSalt = salt,
-                SiteAccess = "Dalgaranga,Mt Magnet",
+                SiteAccess = "Dalgaranga,Mt Magnet,Penny",
                 Role = "Admin",
                 CreatedAt = DateTime.Now
             });
@@ -40,7 +40,7 @@ namespace AlcoConnectWatch.Data
             context.AppSettings.Add(new AppSetting
             {
                 SettingKey = "Sites",
-                SettingValue = "Dalgaranga,Mt Magnet"
+                SettingValue = "Dalgaranga,Mt Magnet,Penny"
             });
 
             context.SaveChanges();

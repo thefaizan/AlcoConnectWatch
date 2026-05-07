@@ -23,6 +23,15 @@ namespace AlcoConnectWatch.Models
 
         public int DuplicatesSkipped { get; set; }
 
+        // Detailed tracking fields
+        public int TotalRowsInFile { get; set; }
+
+        public int SkippedEmptyRows { get; set; }
+
+        public int SkippedInvalidDate { get; set; }
+
+        public int SkippedOtherErrors { get; set; }
+
         [Required]
         [StringLength(20)]
         public string Status { get; set; }
