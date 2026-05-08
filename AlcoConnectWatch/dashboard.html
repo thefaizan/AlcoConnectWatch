@@ -1059,7 +1059,7 @@
                           <td class="font-semibold" x-text="row.name"></td>
                           <td x-text="row.workgroup"></td>
                           <td x-text="row.organisation"></td>
-                          <td>
+                          <td style="min-width:150px">
                             <span
                               class="site-tag dalgaranga"
                               x-text="row.workSite"
@@ -1071,7 +1071,7 @@
                             class="font-mono text-xs"
                             x-text="row.imaOpenInx"
                           ></td>
-                          <td x-text="row.mobile"></td>
+                          <td style="min-width:150px" x-text="row.mobile"></td>
                         </tr>
                       </template>
                     </tbody>
@@ -1586,7 +1586,8 @@
                           x-text="log.errorMessage"
                         ></span>
                         <span x-show="!log.errorMessage" class="text-gray-300"
-                          >&mdash;</span>
+                          >&mdash;</span
+                        >
                       </td>
                       <td
                         class="text-sm text-gray-500 whitespace-nowrap"
