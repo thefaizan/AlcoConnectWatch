@@ -12,15 +12,31 @@ namespace AlcoConnectWatch.Services
         {
             using (var db = new AlcoConnectWatchContext())
             {
+                var isMtMagnet = site.ToLower().Contains("magnet");
+
                 var evacRecords = db.EvacRecords
                     .Where(e => e.RosterDate == date &&
-                                e.WorkSite.ToLower() == site.ToLower())
+                                (isMtMagnet
+                                    ? e.WorkSite.ToLower().Contains("magnet")
+                                    : e.WorkSite.ToLower() == site.ToLower()))
                     .ToList();
 
                 var alcoRecords = db.AlcoConnectRecords
                     .Where(a => a.TestDate == date &&
-                                a.Site.ToLower().Contains(site.ToLower()))
+                                (isMtMagnet
+                                    ? a.Site.ToLower().Contains("magnet")
+                                    : a.Site.ToLower() == site.ToLower()))
                     .ToList();
+
+                //var evacRecords = db.EvacRecords
+                //    .Where(e => e.RosterDate == date &&
+                //                e.WorkSite.ToLower() == site.ToLower())
+                //    .ToList();
+
+                //var alcoRecords = db.AlcoConnectRecords
+                //    .Where(a => a.TestDate == date &&
+                //                a.Site.ToLower().Contains(site.ToLower()))
+                //    .ToList();
 
                 var alcoByStaffId = alcoRecords
                     .GroupBy(a => a.StaffId.TrimStart('0'))
