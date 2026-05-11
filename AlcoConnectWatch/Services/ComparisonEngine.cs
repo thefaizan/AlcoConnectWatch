@@ -12,21 +12,40 @@ namespace AlcoConnectWatch.Services
         {
             using (var db = new AlcoConnectWatchContext())
             {
+
                 var isMtMagnet = site.ToLower().Contains("magnet");
+                var isPenny = site.ToLower().Contains("penny");
+                var isDalgaranga = site.ToLower().Contains("dalgaranga");
 
                 var evacRecords = db.EvacRecords
                     .Where(e => e.RosterDate == date &&
-                                (isMtMagnet
-                                    ? e.WorkSite.ToLower().Contains("magnet")
-                                    : e.WorkSite.ToLower() == site.ToLower()))
+                                (isMtMagnet ? e.WorkSite.ToLower().Contains("magnet") :
+                                 isPenny ? e.WorkSite.ToLower().Contains("penny") :
+                                 isDalgaranga ? e.WorkSite.ToLower().Contains("dalgaranga") :
+                                                   e.WorkSite.ToLower() == site.ToLower()))
                     .ToList();
-
                 var alcoRecords = db.AlcoConnectRecords
-                    .Where(a => a.TestDate == date &&
-                                (isMtMagnet
-                                    ? a.Site.ToLower().Contains("magnet")
-                                    : a.Site.ToLower() == site.ToLower()))
-                    .ToList();
+    .Where(a => a.TestDate == date &&
+                (isMtMagnet ? a.Site.ToLower().Contains("magnet") :
+                 isPenny ? a.Site.ToLower().Contains("penny") :
+                 isDalgaranga ? a.Site.ToLower().Contains("dalgaranga") :
+                                   a.Site.ToLower() == site.ToLower()))
+    .ToList();
+                //var isMtMagnet = site.ToLower().Contains("magnet");
+
+                //var evacRecords = db.EvacRecords
+                //    .Where(e => e.RosterDate == date &&
+                //                (isMtMagnet
+                //                    ? e.WorkSite.ToLower().Contains("magnet") ? e.WorkSite.ToLower().Contains("dalgaranga") ? e.WorkSite.ToLower().Contains("penny")
+                //                    : e.WorkSite.ToLower() == site.ToLower()))
+                //    .ToList();
+
+                //var alcoRecords = db.AlcoConnectRecords
+                //    .Where(a => a.TestDate == date &&
+                //                (isMtMagnet
+                //                    ? a.Site.ToLower().Contains("magnet")
+                //                    : a.Site.ToLower() == site.ToLower()))
+                //    .ToList();
 
                 //var evacRecords = db.EvacRecords
                 //    .Where(e => e.RosterDate == date &&
