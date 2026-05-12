@@ -148,6 +148,7 @@ function app() {
         this.stats.complianceTarget = stats.complianceRate;
           this.stats.pendingAlertsTarget = stats.pendingAlerts;
           this.stats.sites = stats.sites || [];
+          console.log('DEBUG sites:', stats.sites, this.stats.sites);  // temporary debug
         this.recentActivity = activity;
         this.animateCounters();
       } catch (e) {
