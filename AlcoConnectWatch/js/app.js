@@ -19,7 +19,8 @@ function app() {
       complianceRate: 0,
       complianceTarget: 0,
       pendingAlerts: 0,
-      pendingAlertsTarget: 0,
+        pendingAlertsTarget: 0,
+        sites: [] 
     },
 
     report: {

@@ -8,6 +8,8 @@ namespace AlcoConnectWatch.Models.DTOs
         public int ActiveSites { get; set; }
         public double ComplianceRate { get; set; }
         public int PendingAlerts { get; set; }
+
+        public List<string> Sites { get; set; }
     }
 
     public class ActivityItem

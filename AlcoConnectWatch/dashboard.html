@@ -520,39 +520,37 @@
 
               <!-- Site Status -->
               <div class="card-gold animate-fade-in-up stagger-7">
-                <div class="px-6 py-4 border-b border-gray-100">
-                  <h3 class="font-bold text-gray-800">Site Status</h3>
-                  <div class="gold-accent"></div>
-                </div>
-                <div class="p-4 space-y-3">
-                  <div
-                    class="flex items-center justify-between p-3 rounded-xl bg-amber-50/60"
-                  >
-                    <div class="flex items-center gap-3">
-                      <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                      <span class="text-sm font-semibold text-gray-800"
-                        >Dalgaranga</span
-                      >
-                    </div>
-                    <span class="badge-status success"
-                      ><span class="pulse-dot"></span> Active</span
-                    >
+                  <div class="px-6 py-4 border-b border-gray-100">
+                      <h3 class="font-bold text-gray-800">Site Status</h3>
+                      <div class="gold-accent"></div>
                   </div>
-                  <div
-                    class="flex items-center justify-between p-3 rounded-xl bg-blue-50/60"
-                  >
-                    <div class="flex items-center gap-3">
-                      <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-                      <span class="text-sm font-semibold text-gray-800"
-                        >Mt Magnet</span
-                      >
-                    </div>
-                    <span class="badge-status success"
-                      ><span class="pulse-dot"></span> Active</span
-                    >
+                  <div class="p-4 space-y-3">
+                      <template x-for="(site, idx) in stats.sites" :key="idx">
+                          <div class="flex items-center justify-between p-3 rounded-xl"
+                               :class="{
+             'bg-amber-50/60': site.toLowerCase().includes('dalgaranga'),
+             'bg-blue-50/60': site.toLowerCase().includes('magnet'),
+             'bg-green-50/60': site.toLowerCase().includes('penny'),
+             'bg-purple-50/60': !site.toLowerCase().includes('dalgaranga') && !site.toLowerCase().includes('magnet') &&
+  !site.toLowerCase().includes('penny')
+           }">
+                              <div class="flex items-center gap-3">
+                                  <div class="w-3 h-3 rounded-full"
+                                       :class="{
+                 'bg-amber-500': site.toLowerCase().includes('dalgaranga'),
+                 'bg-blue-500': site.toLowerCase().includes('magnet'),
+                 'bg-green-500': site.toLowerCase().includes('penny'),
+                 'bg-purple-500': !site.toLowerCase().includes('dalgaranga') && !site.toLowerCase().includes('magnet')
+  && !site.toLowerCase().includes('penny')
+               }"></div>
+                                  <span class="text-sm font-semibold text-gray-800" x-text="site"></span>
+                              </div>
+                              <span class="badge-status success">
+                                  <span class="pulse-dot"></span> Active
+                              </span>
+                          </div>
+                      </template>
                   </div>
-                  
-                </div>
               </div>
             </div>
           </div>

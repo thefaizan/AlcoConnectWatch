@@ -59,18 +59,61 @@ namespace AlcoConnectWatch.Controllers
                 double complianceRate = 0;
                 int complianceGaps = 0;
 
+                //if (latestDate != default(DateTime))
+                //{
+                //    var totalEvac = db.EvacRecords.Count(e => e.RosterDate == latestDate);
+                //    if (totalEvac > 0)
+                //    {
+                //        var evacIds = db.EvacRecords
+                //            .Where(e => e.RosterDate == latestDate)
+                //            .Select(e => e.ExtractedId)
+                //            .ToList();
+
+                //        var alcoIds = db.AlcoConnectRecords
+                //            .Where(a => a.TestDate == latestDate)
+                //            .Select(a => a.StaffId)
+                //            .Distinct()
+                //            .ToList();
+
+                //        var alcoIdsTrimmed = alcoIds.Select(id => id.TrimStart('0')).ToHashSet();
+                //        var matched = evacIds.Count(id => alcoIdsTrimmed.Contains(id.TrimStart('0')));
+                //        complianceRate = Math.Round((double)matched / totalEvac * 100, 1);
+                //        complianceGaps = totalEvac - matched;
+                //    }
+                //}
                 if (latestDate != default(DateTime))
                 {
-                    var totalEvac = db.EvacRecords.Count(e => e.RosterDate == latestDate);
+                    // Filter Evac by user's sites
+                    var evacRecords = db.EvacRecords
+                        .Where(e => e.RosterDate == latestDate)
+                        .ToList()
+                        .Where(e => sites.Any(site =>
+                            site.ToLower().Contains("magnet")
+                                ? e.WorkSite.ToLower().Contains("magnet")
+                                : site.ToLower().Contains("penny")
+                                    ? e.WorkSite.ToLower().Contains("penny")
+                                    : site.ToLower().Contains("dalgaranga")
+                                        ? e.WorkSite.ToLower().Contains("dalgaranga")
+                                        : e.WorkSite.ToLower() == site.ToLower()))
+                        .ToList();
+
+                    var totalEvac = evacRecords.Count;
                     if (totalEvac > 0)
                     {
-                        var evacIds = db.EvacRecords
-                            .Where(e => e.RosterDate == latestDate)
-                            .Select(e => e.ExtractedId)
-                            .ToList();
+                        var evacIds = evacRecords.Select(e => e.ExtractedId).ToList();
 
+                        // Filter AlcoConnect by user's sites
                         var alcoIds = db.AlcoConnectRecords
                             .Where(a => a.TestDate == latestDate)
+                            .ToList()
+                            .Where(a => sites.Any(site =>
+                                site.ToLower().Contains("magnet")
+                                    ? a.Site.ToLower().Contains("magnet")
+                                    : site.ToLower().Contains("penny")
+                                        ? a.Site.ToLower().Contains("penny")
+                                        : site.ToLower().Contains("dalgaranga")
+                                            ? a.Site.ToLower().Contains("dalgaranga")
+                                            : a.Site.ToLower() == site.ToLower()))
                             .Select(a => a.StaffId)
                             .Distinct()
                             .ToList();
@@ -81,13 +124,13 @@ namespace AlcoConnectWatch.Controllers
                         complianceGaps = totalEvac - matched;
                     }
                 }
-
                 return Ok(new DashboardStats
                 {
                     FilesProcessed = filesToday,
                     ActiveSites = sites.Count,
                     ComplianceRate = complianceRate,
-                    PendingAlerts = complianceGaps
+                    PendingAlerts = complianceGaps,
+                      Sites = sites  // ADD THIS
                 });
             }
         }
