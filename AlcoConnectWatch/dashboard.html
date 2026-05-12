@@ -525,6 +525,7 @@
                       <div class="gold-accent"></div>
                   </div>
                   <div class="p-4 space-y-3">
+                      <div class="text-red-500 font-bold" x-text="'Sites count: ' + (stats.sites ? stats.sites.length : 'NULL')"></div>
                       <template x-for="(site, idx) in stats.sites" :key="idx" x-show="stats.sites && stats.sites.length > 0">
                           <div class="flex items-center justify-between p-3 rounded-xl"
                                :class="{
