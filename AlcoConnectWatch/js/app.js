@@ -146,7 +146,8 @@ function app() {
         this.stats.filesTarget = stats.filesProcessed;
         this.stats.activeSitesTarget = stats.activeSites;
         this.stats.complianceTarget = stats.complianceRate;
-        this.stats.pendingAlertsTarget = stats.pendingAlerts;
+          this.stats.pendingAlertsTarget = stats.pendingAlerts;
+          this.stats.sites = stats.sites || [];
         this.recentActivity = activity;
         this.animateCounters();
       } catch (e) {
