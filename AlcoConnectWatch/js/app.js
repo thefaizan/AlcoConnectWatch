@@ -10,6 +10,7 @@ function app() {
 
       sites: [],
       allSites: [],
+      userSites: [], 
 
     stats: {
       filesProcessed: 0,
@@ -147,8 +148,7 @@ function app() {
         this.stats.activeSitesTarget = stats.activeSites;
         this.stats.complianceTarget = stats.complianceRate;
           this.stats.pendingAlertsTarget = stats.pendingAlerts;
-          this.stats.sites = stats.sites || [];
-          console.log('DEBUG sites:', stats.sites, this.stats.sites);  // temporary debug
+          this.userSites = stats.sites || [];
         this.recentActivity = activity;
         this.animateCounters();
       } catch (e) {
