@@ -1412,3 +1412,9 @@ body {
     padding: 2px 2px; /* Consistent padding */
     box-sizing: border-box;
 }
+
+
+.badge-status.danger {
+    background: #fee2e2;
+    color: #dc2626;
+}
