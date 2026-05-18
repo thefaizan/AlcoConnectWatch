@@ -1152,7 +1152,7 @@
                           ></td>
                           <td>
                             <span
-                              class="badge-status success"
+                              :class="parseFloat(row.result) > 0 ? 'badge-status danger' : 'badge-status success'"
                               x-text="row.result"
                             ></span>
                           </td>
@@ -1231,7 +1231,7 @@
                           ></td>
                           <td>
                             <span
-                              class="badge-status success"
+                              :class="parseFloat(row.result) > 0 ? 'badge-status danger' : 'badge-status success'"
                               x-text="row.result"
                             ></span>
                           </td>
